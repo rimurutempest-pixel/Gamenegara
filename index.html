@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Game Tebak Negara</title>
 <style>
 body{margin:0;background:#222;color:#fff;font-family:monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh}
@@ -21,9 +20,7 @@ button{margin:5px;padding:5px 10px}
 <button onclick="setMode('classic');start()">Classic</button>
 <button onclick="setMode('survival');start()">Survival</button>
 </div>
-<div id="selector" style="display:none;margin-top:10px">
-<select id="lev" onchange="goLevel()"></select>
-</div>
+<div id="selector" style="display:none;margin-top:10px"><select id="lev" onchange="goLevel()"></select></div>
 </div>
 <div id="game">
 <p id="stat" style="font-size:12px"></p>
@@ -47,15 +44,14 @@ function save(){localStorage.setItem('game',JSON.stringify({idx,unlocked,score,l
 function load(){const g=JSON.parse(localStorage.getItem('game'));if(g){idx=g.idx;unlocked=g.unlocked;score=g.score;lives=g.lives;mode=g.mode}}
 function checkCode(){if(document.getElementById('code').value==='Agil imut'){const s=document.getElementById('lev');s.innerHTML='';const list=mode==='survival'?levelsSurvival:levelsClassic;list.forEach((_,i)=>{s.innerHTML+=`<option value="${i}">Level ${i+1}</option>`});document.getElementById('selector').style.display='block'}}
 function setMode(m){mode=m;idx=0;unlocked=0;lives=3;score=0;answered=[];document.getElementById('selector').style.display='none';document.getElementById('stat').innerText=mode==='survival'?`Nyawa:${lives} Skor:${score}`:'';document.getElementById('shopAnsBtn').style.display=mode==='survival'?'inline':'none';document.getElementById('shopLifeBtn').style.display=mode==='survival'?'inline':'none'}
-function start(){load();document.getElementById('welcome').style.display='none';document.getElementById('game').style.display='flex';show()}
+function start(){load();const p=new URLSearchParams(location.search);if(p.get('level'))idx=parseInt(p.get('level'))-1;if(p.get('m'))mode=p.get('m');document.getElementById('welcome').style.display='none';document.getElementById('game').style.display='flex';show()}
 function goLevel(){idx=parseInt(document.getElementById('lev').value);unlocked=idx;save();start()}
 function backMenu(){save();document.getElementById('game').style.display='none';const w=document.getElementById('welcome');w.style.display='flex';w.style.flexDirection='column';w.style.alignItems='center'}
-function show(){const list=mode==='survival'?levelsSurvival:levelsClassic;document.getElementById('lvl').innerText='Level '+(idx+1);document.getElementById('clue').innerText=list[idx].q;document.getElementById('ans').value='';document.getElementById('result').innerText='';document.getElementById('prevBtn').style.display=idx>0?'inline':'none';if(idx<unlocked){document.getElementById('nextBtn').style.display='inline';document.getElementById('nextBtn').innerText='Berikutnya'}else if(idx===list.length-1){document.getElementById('nextBtn').style.display='inline';document.getElementById('nextBtn').innerText='level nya hanya segitu dulu tunggu pangeran Agil update'}else{document.getElementById('nextBtn').style.display='none'};document.getElementById('stat').innerText=mode==='survival'?`Nyawa:${lives} Skor:${score}`:'';save()}
-function check(){const list=mode==='survival'?levelsSurvival:levelsClassic;if(document.getElementById('ans').value.toLowerCase()===list[idx].a){document.getElementById('result').innerText='Benar!';if(mode==='survival' &&!answered[idx])score+=2;if(idx===unlocked)unlocked++;answered[idx]=true;idx++;if(idx<list.length)setTimeout(show,800);else document.getElementById('result').innerText='Selesai!'}else{document.getElementById('result').innerText='Salah';if(mode==='survival'){lives--;if(lives<=0){document.getElementById('result').innerText='Game Over';idx=0;unlocked=0;lives=3;score=0;answered=[];save();setTimeout(backMenu,1200);return}}};if(mode==='survival')document.getElementById('stat').innerText=`Nyawa:${lives} Skor:${score}`;save()}
-function shopAnswer(){if(mode==='survival' && score>=5){score-=5;const ans=levelsSurvival[idx].a;document.getElementById('ans').value=ans;document.getElementById('result').innerText='Jawaban: '+ans;answered[idx]=true;document.getElementById('stat').innerText=`Nyawa:${lives} Skor:${score}`;save()}}
-function shopLife(){if(mode==='survival' && score>=3){score-=3;lives++;document.getElementById('stat').innerText=`Nyawa:${lives} Skor:${score}`;save()}}
+function show(){const list=mode==='survival'?levelsSurvival:levelsClassic;document.getElementById('lvl').innerText='Level '+(idx+1);document.getElementById('clue').innerText=list[idx].q;document.getElementById('ans').value='';document.getElementById('result').innerText='';document.getElementById('prevBtn').style.display=idx>0?'inline':'none';if(idx<unlocked){document.getElementById('nextBtn').style.display='inline';document.getElementById('nextBtn').innerText='Berikutnya'}else if(idx===list.length-1){document.getElementById('nextBtn').style.display='inline';document.getElementById('nextBtn').innerText='level nya hanya segitu dulu tunggu pangeran Agil update'}else{document.getElementById('nextBtn').style.display='none'};document.getElementById('stat').innerText=mode==='survival'?`Nyawa:${lives} Skor:${score}`:'';history.pushState(null,'','?level='+(idx+1)+'&m='+mode);save()}
+function check(){const list=mode==='survival'?levelsSurvival:levelsClassic;if(document.getElementById('ans').value.toLowerCase()===list[idx].a){document.getElementById('result').innerText='Benar!';if(mode==='survival'&&!answered[idx])score+=2;if(idx===unlocked)unlocked++;answered[idx]=true;idx++;if(idx<list.length)setTimeout(show,800);else document.getElementById('result').innerText='Selesai!'}else{document.getElementById('result').innerText='Salah';if(mode==='survival'){lives--;if(lives<=0){document.getElementById('result').innerText='Game Over';idx=0;unlocked=0;lives=3;score=0;answered=[];save();setTimeout(backMenu,1200);return}}};if(mode==='survival')document.getElementById('stat').innerText=`Nyawa:${lives} Skor:${score}`;save()}
+function shopAnswer(){if(mode==='survival'&&score>=5){score-=5;const ans=levelsSurvival[idx].a;document.getElementById('ans').value=ans;document.getElementById('result').innerText='Jawaban: '+ans;answered[idx]=true;document.getElementById('stat').innerText=`Nyawa:${lives} Skor:${score}`;save()}}
+function shopLife(){if(mode==='survival'&&score>=3){score-=3;lives++;document.getElementById('stat').innerText=`Nyawa:${lives} Skor:${score}`;save()}}
 function prev(){if(idx>0){idx--;show()}}
-function next(){const list=mode==='survival'?levelsSurvival:levelsClassic;if(document.getElementById('nextBtn').innerText==='Berikutnya' && idx<unlocked){idx++;show()}}
+function next(){const list=mode==='survival'?levelsSurvival:levelsClassic;if(document.getElementById('nextBtn').innerText==='Berikutnya'&&idx<unlocked){idx++;show()}}
 </script>
-</body>
-  </html>
+</body></html>
